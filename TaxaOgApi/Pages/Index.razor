@@ -171,7 +171,7 @@
                     Console.WriteLine($"API Response: {response}");
 
                     var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
-
+                    
                     Console.WriteLine($"JSON to Deserialize: {response}");
                     Console.WriteLine($"Deserialized Result: {result}");
 
