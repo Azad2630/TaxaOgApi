@@ -1,0 +1,227 @@
+﻿@page "/"
+@using System.Text.Json;
+
+
+<PageTitle>Index</PageTitle>
+
+<h1>taxa</h1>
+
+<html>
+<head>
+    
+</head>
+<body>
+    <div class="big-box">
+        <div class="rectangle">
+            <input class="search-box" type="text" @bind="AddressStart" placeholder="address start" />
+            <input class="search-box" type="text" @bind="AddressEnd" placeholder="address slut" />
+            <select class="menu-box" @bind="SelectedTime">
+                <option value="dag">dag</option>
+                <option value="nat">nat</option>
+            </select>
+            <select class="menu-box" @bind="SelectedCar">
+                <option value="LVogn">Almindelige Vogne</option>
+                <option value="SVogn">Store Vogne – minibus</option>
+            </select>
+        </div>
+
+        <div class="square square1">
+            <div class="checkbox-group">
+                <p class="text"><strong>Tillæg</strong></p>
+                <div class="checkbox-item" for="checkbox1">
+                    <input type="checkbox" id="checkbox1" @bind="Checkbox1" value="30" /><label>Cykel</label>
+                </div>
+                <div class="checkbox-item" for="checkbox2">
+                    <input type="checkbox" id="checkbox2" @bind="Checkbox2" value="30" /><label>Opbæring</label>
+                </div>
+                <div class="checkbox-item" for="checkbox3">
+                    <input type="checkbox" id="checkbox3" @bind="Checkbox3" value="15" /><label>Lufthavn</label>
+                </div>
+                <div class="checkbox-item" for="checkbox4">
+                    <input type="checkbox" id="checkbox4" @bind="Checkbox4" value="40" /><label>5-6 passagerer</label>
+                </div>
+                <div class="checkbox-item" for="checkbox5">
+                    <input type="checkbox" id="checkbox5" @bind="Checkbox5" value="350" /><label>Liftvogn</label>
+                </div>
+                <p class="text"><strong>Køresel over bro</strong></p>
+                <div class="checkbox-item" for="checkbox6">
+                    <input type="checkbox" id="checkbox6" @bind="Checkbox6" value="350" /><label>Øresund</label>
+                </div>
+                <div class="checkbox-item" for="checkbox7">
+                    <input type="checkbox" id="checkbox7" @bind="Checkbox7" value="540" /><label>Storebæltsbroen</label>
+                </div>
+                <div class="calculat">
+                    <button type="button" @onclick="Calculate">calculate</button>
+                </div>
+            </div>
+        </div>
+        <div class="square square2">
+            <p>hello</p>
+            <p>
+                @DistanceResult
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+<style>
+    .big-box {
+        width: 75vw;
+        height: 75vh;
+        position: relative;
+        border: 1px solid black;
+        overflow: hidden;
+    }
+
+    .rectangle {
+        width: 100%;
+        height: 25%;
+        background-color: #646E78;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 1px solid black;
+    }
+
+    .search-box {
+        width: 100%;
+        height: 30%;
+        margin: 25px;
+        border: 1px solid black;
+        background-color: white;
+    }
+
+    .menu-box {
+        width: 100%;
+        height: 30%;
+        margin: 25px;
+    }
+
+    .square {
+        height: 100%;
+        float: left;
+        width: 50%;
+    }
+
+    .square1 {
+        background-color: #8D98A7;
+        border-right: 1px solid black;
+    }
+
+    .checkbox-group {
+        font-size: 20px;
+    }
+
+    .checkbox-item {
+        padding-left: 40%;
+    }
+
+    .text {
+        text-align: center;
+        padding-top: 25px;
+    }
+
+    .calculat {
+        padding-top: 10%;
+        text-align: center;
+    }
+
+    .square2 {
+        background-color: #DCCCBB;
+    }
+
+</style>
+
+
+
+
+@code {
+    public string? AddressStart { get; set; }
+    public string? AddressEnd { get; set; }
+    public string? SelectedTime { get; set; }
+    public string? SelectedCar { get; set; }
+    public bool Checkbox1 { get; set; }
+    public bool Checkbox2 { get; set; }
+    public bool Checkbox3 { get; set; }
+    public bool Checkbox4 { get; set; }
+    public bool Checkbox5 { get; set; }
+    public bool Checkbox6 { get; set; }
+    public bool Checkbox7 { get; set; }
+    public bool Button { get; set; }
+
+    public string? DistanceResult { get; set; }
+
+
+
+    public async Task Calculate()
+    {
+        if (!string.IsNullOrWhiteSpace(AddressStart) && !string.IsNullOrWhiteSpace(AddressEnd))
+        {
+            try
+            {
+                string apiKey = "AIzaSyAi9pU1OmMqpvh4vYZ8udkJZ4ZyKh1aBiY";
+                string apiUrl = $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={Uri.EscapeDataString(AddressStart)}&destinations={Uri.EscapeDataString(AddressEnd)}&key={apiKey}";
+
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetStringAsync(apiUrl);
+                    Console.WriteLine($"API Response: {response}");
+
+                    var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
+
+                    Console.WriteLine($"JSON to Deserialize: {response}");
+                    Console.WriteLine($"Deserialized Result: {result}");
+
+                    string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
+
+                    if (distance != null)
+                    {
+                        DistanceResult = $"Distance: {distance}";
+                    }
+                    else
+                    {
+                        DistanceResult = "Fejl: Ingen afstand fundet i API-svaret.";
+                    }
+                }
+            }
+            catch (JsonException jsonException)
+            {
+                Console.WriteLine($"JSON Deserialization Error: {jsonException.Message}");
+                DistanceResult = "Fejl ved deserialisering af JSON-data";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                DistanceResult = "Fejl ved hentning af afstand";
+            }
+        }
+    }
+
+
+
+    public class GoogleMapsDistanceMatrixResponse
+    {
+        public List<GoogleMapsDistanceMatrixRow>? rows { get; set; }
+    }
+
+    public class GoogleMapsDistanceMatrixRow
+    {
+        public List<GoogleMapsDistanceMatrixElement>? elements { get; set; }
+    }
+
+    public class GoogleMapsDistanceMatrixElement
+    {
+        public GoogleMapsDistanceMatrixText? distance { get; set; }
+
+    }
+
+    public class GoogleMapsDistanceMatrixText
+    {
+        public string? text { get; set; }
+    }
+
+
+}
