@@ -8,7 +8,7 @@
 
 <html>
 <head>
-    
+    @*<meta name="referrer" content="no-referrer-when-downgrade">*@
 </head>
 <body>
     <div class="big-box">
@@ -29,7 +29,8 @@
             <div class="checkbox-group">
                 <p class="text"><strong>Tillæg</strong></p>
                 <div class="checkbox-item" for="checkbox1">
-                    <input type="checkbox" id="checkbox1" @bind="Checkbox1" value="30" /><label>Cykel</label>
+                    <label for="Checkbox1">Antal cykler:</label>
+                    <input type="number" id="Checkbox1" @bind="Checkbox1" min="0" placeholder="0" style="width: 50px" />
                 </div>
                 <div class="checkbox-item" for="checkbox2">
                     <input type="checkbox" id="checkbox2" @bind="Checkbox2" value="30" /><label>Opbæring</label>
@@ -56,7 +57,10 @@
             </div>
         </div>
         <div class="square square2">
-            <p>hello</p>
+            @if (Button)
+            {
+                <iframe width="50%" height="50%" frameborder="0" style="border:0;" allowfullscreen src="@MapUrl"></iframe>
+            }
             <p>
                 @DistanceResult
             </p>
@@ -139,11 +143,11 @@
 
 
 @code {
-    public string? AddressStart { get; set; }
-    public string? AddressEnd { get; set; }
-    public string? SelectedTime { get; set; }
-    public string? SelectedCar { get; set; }
-    public bool Checkbox1 { get; set; }
+    public string AddressStart { get; set; }
+    public string AddressEnd { get; set; }
+    public string SelectedTime { get; set; }
+    public string SelectedCar { get; set; }
+    public int Checkbox1 { get; set; }
     public bool Checkbox2 { get; set; }
     public bool Checkbox3 { get; set; }
     public bool Checkbox4 { get; set; }
@@ -151,77 +155,36 @@
     public bool Checkbox6 { get; set; }
     public bool Checkbox7 { get; set; }
     public bool Button { get; set; }
+    public string MapUrl { get; set; }
 
-    public string? DistanceResult { get; set; }
+    public string DistanceResult { get; set; }
 
-
+    [Inject]
+    public ApiService ApiService { get; set; }
 
     public async Task Calculate()
     {
         if (!string.IsNullOrWhiteSpace(AddressStart) && !string.IsNullOrWhiteSpace(AddressEnd))
         {
-            try
+
+            var response = await ApiService.GetDistance(AddressStart, AddressEnd);
+            if (response != null)
             {
-                string apiKey = "AIzaSyAi9pU1OmMqpvh4vYZ8udkJZ4ZyKh1aBiY";
-                string apiUrl = $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={Uri.EscapeDataString(AddressStart)}&destinations={Uri.EscapeDataString(AddressEnd)}&key={apiKey}";
+                var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
+                string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
+                DistanceResult = distance != null ? $"Distance: {distance}" : "";
 
-                using (var client = new HttpClient())
-                {
-                    var response = await client.GetStringAsync(apiUrl);
-                    Console.WriteLine($"API Response: {response}");
+                MapUrl = $"https://www.google.com/maps/embed/v1/directions?key=AIzaSyBH1LLJchXHqhquPfqwe8KUCcc2yu7HWG0&origin={AddressStart}&destination={AddressEnd}";
 
-                    var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
-                    
-                    Console.WriteLine($"JSON to Deserialize: {response}");
-                    Console.WriteLine($"Deserialized Result: {result}");
-
-                    string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
-
-                    if (distance != null)
-                    {
-                        DistanceResult = $"Distance: {distance}";
-                    }
-                    else
-                    {
-                        DistanceResult = "Fejl: Ingen afstand fundet i API-svaret.";
-                    }
-                }
+                // Angiv Button til true for at udløse opdatering af UI
+                Button = true;
             }
-            catch (JsonException jsonException)
-            {
-                Console.WriteLine($"JSON Deserialization Error: {jsonException.Message}");
-                DistanceResult = "Fejl ved deserialisering af JSON-data";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                DistanceResult = "Fejl ved hentning af afstand";
-            }
+
+
         }
     }
 
 
-
-    public class GoogleMapsDistanceMatrixResponse
-    {
-        public List<GoogleMapsDistanceMatrixRow>? rows { get; set; }
-    }
-
-    public class GoogleMapsDistanceMatrixRow
-    {
-        public List<GoogleMapsDistanceMatrixElement>? elements { get; set; }
-    }
-
-    public class GoogleMapsDistanceMatrixElement
-    {
-        public GoogleMapsDistanceMatrixText? distance { get; set; }
-
-    }
-
-    public class GoogleMapsDistanceMatrixText
-    {
-        public string? text { get; set; }
-    }
 
 
 }
