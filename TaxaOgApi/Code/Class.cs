@@ -11,6 +11,7 @@ public class GoogleMapsDistanceMatrixRow
 public class GoogleMapsDistanceMatrixElement
 {
     public GoogleMapsDistanceMatrixText? distance { get; set; }
+    public GoogleMapsDistanceMatrixText? duration { get; set; }
 }
 
 public class GoogleMapsDistanceMatrixText
