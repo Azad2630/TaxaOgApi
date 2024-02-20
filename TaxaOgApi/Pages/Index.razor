@@ -135,6 +135,9 @@
 
     .square2 {
         background-color: #DCCCBB;
+        text-align: center;
+        margin: auto;
+        display: table;
     }
 
 </style>
@@ -165,7 +168,7 @@
 
     public async Task Calculate()
     {
-        
+
         if (!string.IsNullOrWhiteSpace(AddressStart) && !string.IsNullOrWhiteSpace(AddressEnd))
         {
 
@@ -199,22 +202,48 @@
             }
 
 
-            
+
+            double cykelTillæg = 0;
+            if (Checkbox1 > 0)
+            {
+                cykelTillæg = 30 * Checkbox1; 
+            }
+
+            double opbæringTillæg = Checkbox2 ? 30 : 0;
+            double lufthavnTillæg = Checkbox3 ? 15 : 0;
+            double passagerTillæg = Checkbox4 ? 40 : 0;
+            double liftvognTillæg = Checkbox5 ? 350 : 0;
+
+            double broTillæg = 0;
+            if (Checkbox6)
+            {
+                broTillæg += 350; // øresund
+            }
+            if (Checkbox7)
+            {
+                broTillæg += 540; // storebæltsbroen
+            }
+
+
+
             var response = await ApiService.GetDistance(AddressStart, AddressEnd);
             if (response != null)
             {
                 var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
                 string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
                 string duration = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.duration?.text;
-                DistanceResult = distance != null ? $"Distance: {distance}, tid: {duration}, kr:{startPrice}" : "";
 
-                
-                
+                double distanceInKm = double.Parse(distance?.Replace(" km", ""));
+                double durationInMin = double.Parse(duration?.Replace(" mins", ""));
+
+                double totalPrice = startPrice + (distanceInKm * pricePerKm) + (durationInMin * pricePerMin) + cykelTillæg + opbæringTillæg + lufthavnTillæg + passagerTillæg + liftvognTillæg + broTillæg;
+
+                DistanceResult = distance != null ? $"afstand: {distance}, tid: {duration}, pris: {totalPrice} kr" : "";
 
                 MapUrl = $"https://www.google.com/maps/embed/v1/directions?key=AIzaSyBH1LLJchXHqhquPfqwe8KUCcc2yu7HWG0&origin={AddressStart}&destination={AddressEnd}";
 
                 Button = true;
-            } 
+            }
         }
     }
 }
