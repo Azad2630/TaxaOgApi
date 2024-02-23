@@ -2,7 +2,6 @@
 @using TaxaOgApi;
 @using System.Text.Json;
 
-
 <PageTitle>Index</PageTitle>
 
 <header>
@@ -15,7 +14,6 @@
         <li><NavLink href="/om">om</NavLink></li>
     </ul>
 </header>
-
 
 <html>
 <head>
@@ -35,7 +33,6 @@
                 <option value="Store Vogne">Store Vogne – minibus</option>
             </select>
         </div>
-
         <div class="square square1">
             <div class="checkbox-group">
                 <p class="text"><strong>Tillæg</strong></p>
@@ -71,7 +68,6 @@
             @if (Button)
             {
                 <iframe width="50%" height="60%" frameborder="0" style="border:0; padding-top: 30px" allowfullscreen src="@MapUrl"></iframe>
-
             }
             <p>
                 @DistanceResult
@@ -120,7 +116,7 @@
     .square {
         height: 100%;
         float: left;
-        width: 50%;
+        width: 50%
     }
 
     .square1 {
@@ -153,8 +149,6 @@
         display: table;
     }
 
-
-
     header {
         font-size: xx-large;
         border-top: 1px solid black;
@@ -180,7 +174,7 @@
             margin-top: 13px;
             justify-content: center;
             width: 100%;
-            margin-left: -190px;
+            /*margin-left: -190px;*/
         }
 
             header ul li {
@@ -196,6 +190,14 @@
         a:hover {
             color: #DCCCBB;
         }
+
+    span {
+        margin: 5px;
+    }
+
+    p {
+        font-size: x-large;
+    }
 </style>
 
 
@@ -218,8 +220,6 @@
 
     public string? DistanceResult { get; set; }
 
-
-
     [Inject]
     public ApiService ApiService { get; set; }
 
@@ -228,7 +228,6 @@
 
         if (!string.IsNullOrWhiteSpace(AddressStart) && !string.IsNullOrWhiteSpace(AddressEnd))
         {
-
             double startPrice = 0;
             double pricePerKm = 0;
             double pricePerMin = 0;
@@ -258,8 +257,6 @@
                 pricePerMin = 7;
             }
 
-
-
             double cykelTillæg = 0;
             if (Checkbox1 > 0)
             {
@@ -280,8 +277,6 @@
             {
                 broTillæg += 540;
             }
-
-
 
             var response = await ApiService.GetDistance(AddressStart, AddressEnd);
             if (response != null)
