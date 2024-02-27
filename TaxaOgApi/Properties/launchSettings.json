@@ -16,7 +16,8 @@
       },
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "applicationUrl": "https://localhost:7000;http://localhost:7001",
-      "dotnetRunMessages": true
+      "dotnetRunMessages": true,
+      "nativeDebugging": false
     },
     "IIS Express": {
       "commandName": "IISExpress",
