@@ -3,12 +3,17 @@
 @using System.Text.Json;
 
 <PageTitle>Index</PageTitle>
+<head>
+    <link href="index.razor.cs" rel="cs" />
+    <link href="index.razor.css" rel="stylesheet" />
+</head>
+
 
 <header>
     <span>taxi </span>
     <span>4x27</span>
     <ul>
-        <li><NavLink href="/">beregn pris</NavLink></li>
+        <li><NavLink  href="/">beregn pris</NavLink></li>
         <li><NavLink href="/contrakt">contrakt</NavLink></li>
         <li><NavLink href="/support">support</NavLink></li>
         <li><NavLink href="/om">om</NavLink></li>
@@ -19,7 +24,7 @@
 <div class="big-box">
 
     <div class="rectangle">
-        <input class="search-box" type="text" @bind="AddressStart" placeholder="address start" />
+        <input id="autocomplete-start" class="search-box" type="text" @bind="AddressStart" placeholder="address start" />
         <input class="search-box" type="text" @bind="AddressEnd" placeholder="address slut" />
         <select class="menu-box" @bind="SelectedTime">
             <option value="dag">dag</option>
@@ -76,110 +81,10 @@
             @DistanceResult
         </p>
     </div>
-
 </div>
 
 
 <style>
-    .big-box {
-        width: 100%;
-        height: 88vh;
-        position: relative;
-        border: 1px solid black;
-        overflow: hidden;
-    }
-
-    .rectangle {
-        width: 100%;
-        height: 25%;
-        background-color: #646E78;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-bottom: 1px solid black;
-        font-size: x-large;
-    }
-
-    .search-box {
-        width: 100%;
-        height: 30%;
-        margin: 25px;
-        border: 1px solid black;
-        background-color: white;
-    }
-
-    .menu-box {
-        width: 100%;
-        height: 30%;
-        margin: 25px;
-    }
-
-    .square {
-        height: 100%;
-        float: left;
-        width: 50%
-    }
-
-    .squareLeft {
-        background-color: #8D98A7;
-        border-right: 1px solid black;
-        font-size: x-large;
-    }
-
-
-    .checkbox-item {
-        padding-left: 40%;
-    }
-
-    .text {
-        text-align: center;
-        padding-top: 30px;
-    }
-
-    .calculat {
-        text-align: center;
-        margin-top: 30px;
-    }
-
-    .squareRight {
-        background-color: #DCCCBB;
-        text-align: center;
-        margin: auto;
-        display: table;
-    }
-
-    header {
-        font-size: xx-large;
-        border-top: 1px solid black;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
-        padding-left: 10px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        background-color: #8D98A7;
-    }
-
-        header span {
-            font-size: xx-large;
-            color: black;
-        }
-
-        header ul {
-            list-style-type: none;
-            display: flex;
-            margin-top: 13px;
-            justify-content: center;
-            width: 100%;
-            /*margin-left: -190px;*/
-        }
-
-            header ul li {
-                margin-right: 100px
-            }
-
     a {
         color: black;
         text-decoration: none;
@@ -189,121 +94,4 @@
         a:hover {
             color: #DCCCBB;
         }
-
-    span {
-        margin: 5px;
-    }
-
-    p {
-        font-size: x-large;
-    }
 </style>
-
-
-
-
-@code {
-    public string? AddressStart { get; set; }
-    public string? AddressEnd { get; set; }
-    public string? SelectedTime { get; set; }
-    public string? SelectedCar { get; set; }
-    public int Checkbox1 { get; set; }
-    public bool Checkbox2 { get; set; }
-    public bool Checkbox3 { get; set; }
-    public bool Checkbox4 { get; set; }
-    public bool Checkbox5 { get; set; }
-    public bool Checkbox6 { get; set; }
-    public bool Checkbox7 { get; set; }
-    public bool Button { get; set; }
-    public string? MapUrl { get; set; }
-
-    public string? DistanceResult { get; set; }
-
-
-
-    [Inject]
-    public ApiService ApiService { get; set; }
-
-    public async Task Calculate()
-    {
-
-        if (!string.IsNullOrWhiteSpace(AddressStart) && !string.IsNullOrWhiteSpace(AddressEnd))
-        {
-            double startPrice = 0;
-            double pricePerKm = 0;
-            double pricePerMin = 0;
-
-            if (SelectedTime == "dag" && SelectedCar == "Almindelige Vogne")
-            {
-                startPrice = 37;
-                pricePerKm = 12.75;
-                pricePerMin = 5.75;
-            }
-            else if (SelectedTime == "nat" && SelectedCar == "Almindelige Vogne")
-            {
-                startPrice = 47;
-                pricePerKm = 16;
-                pricePerMin = 7;
-            }
-            else if (SelectedTime == "dag" && SelectedCar == "Store Vogne")
-            {
-                startPrice = 77;
-                pricePerKm = 17;
-                pricePerMin = 5.75;
-            }
-            else if (SelectedTime == "nat" && SelectedCar == "Store Vogne")
-            {
-                startPrice = 87;
-                pricePerKm = 19;
-                pricePerMin = 7;
-            }
-
-
-
-            double cykelTillæg = 0;
-            if (Checkbox1 > 0)
-            {
-                cykelTillæg = 30 * Checkbox1;
-            }
-
-            double opbæringTillæg = Checkbox2 ? 30 : 0;
-            double lufthavnTillæg = Checkbox3 ? 15 : 0;
-            double passagerTillæg = Checkbox4 ? 40 : 0;
-            double liftvognTillæg = Checkbox5 ? 350 : 0;
-
-            double broTillæg = 0;
-            if (Checkbox6)
-            {
-                broTillæg += 350;
-            }
-            if (Checkbox7)
-            {
-                broTillæg += 540;
-            }
-
-            var response = await ApiService.GetDistance(AddressStart, AddressEnd);
-            if (response != null)
-            {
-                var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
-                string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
-                string duration = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.duration?.text;
-
-                double distanceInKm = double.Parse(distance?.Replace(" km", ""));
-                double durationInMin = double.Parse(duration?.Replace(" mins", ""));
-
-                double totalPrice = startPrice + (distanceInKm * pricePerKm) + (durationInMin * pricePerMin) + cykelTillæg + opbæringTillæg + lufthavnTillæg + passagerTillæg + liftvognTillæg + broTillæg;
-
-                double value = 0;
-                value = (double)System.Math.Round(totalPrice, 2);
-
-                DistanceResult = distance != null ? $"afstand: {distance}, tid: {duration}, pris: {value} kr" : "";
-
-                string ApiMap = "AIzaSyBH1LLJchXHqhquPfqwe8KUCcc2yu7HWG0";
-
-                MapUrl = $"https://www.google.com/maps/embed/v1/directions?key={ApiMap}&origin={AddressStart}&destination={AddressEnd}";
-
-                Button = true;
-            }
-        }
-    }
-}
