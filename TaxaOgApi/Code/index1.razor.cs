@@ -20,7 +20,7 @@ namespace TaxaOgApi.Pages
 {
     public partial class Index
     {
-        public string? AddressStart /* = "ballerup";*/ { get; set; }
+        public string? AddressStart { get; set; }
 
         public string? AddressEnd { get; set; }
 
@@ -87,6 +87,11 @@ namespace TaxaOgApi.Pages
                 if (Checkbox1 > 0)
                 {
                     cykelTillæg = 30 * Checkbox1;
+
+                    if (Checkbox1 > 2)
+                    {
+                        cykelTillæg = 60;
+                    }
                 }
 
                 double opbæringTillæg = Checkbox2 ? 30 : 0;
