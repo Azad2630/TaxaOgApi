@@ -115,20 +115,41 @@ namespace TaxaOgApi.Pages
                     var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
 
                     string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
+
                     string duration = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.duration?.text;
 
 
-                    double distanceInKm = double.Parse(distance?.Replace(" km", ""));
-                    double durationInMin = double.Parse(duration?.Replace(" mins", ""));
+                    if (duration.Contains("hours"))
+                    {
+                        string[] parts = duration.Split(' ');
 
-                    double totalPrice = startPrice + (distanceInKm * pricePerKm) + (durationInMin * pricePerMin) + cykelTillæg + opbæringTillæg + lufthavnTillæg + passagerTillæg + liftvognTillæg + broTillæg;
+                        int hours = int.Parse(parts[0]);
+                        int minutes = int.Parse(parts[2]);
+
+                        int totalMinutes = hours * 60 + minutes;
 
 
-                    double value = 0;
-                    value = (double)System.Math.Round(totalPrice, 2);
+                        double distanceInKm = double.Parse(distance?.Replace(" km", ""));
 
-                    DistanceResult = distance != null ? $"afstand: {distance}, tid: {duration}, pris: {value} kr" : "";
+                        double totalPrice = startPrice + (distanceInKm * pricePerKm) + (totalMinutes * pricePerMin) +
+                                            cykelTillæg + opbæringTillæg + lufthavnTillæg + passagerTillæg + liftvognTillæg + broTillæg;
 
+                        double pris = Math.Round(totalPrice, 2);
+
+                        DistanceResult = $"afstand: {distance}, tid: {duration}, pris: {pris} kr";
+                    }
+                    else
+                    {
+                        double distanceInKm = double.Parse(distance?.Replace(" km", ""));
+                        double durationInMin = double.Parse(duration?.Replace(" mins", ""));
+
+                        double totalPrice = startPrice + (distanceInKm * pricePerKm) + (durationInMin * pricePerMin) +
+                                            cykelTillæg + opbæringTillæg + lufthavnTillæg + passagerTillæg + liftvognTillæg + broTillæg;
+
+                        double pris = Math.Round(totalPrice, 2);
+
+                        DistanceResult = distance != null ? $"afstand: {distance}, tid: {duration}, pris: {pris} kr" : "";
+                    }
 
                     string ApiMap = "AIzaSyBH1LLJchXHqhquPfqwe8KUCcc2yu7HWG0";
 

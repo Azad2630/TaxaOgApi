@@ -27,10 +27,12 @@
         <input id="autocomplete-start" class="search-box" type="text" @bind="AddressStart" placeholder="address start" />
         <input class="search-box" type="text" @bind="AddressEnd" placeholder="address slut" />
         <select class="menu-box" @bind="SelectedTime">
+            <option value="StandardTid">vælge tid</option>
             <option value="dag">dag</option>
             <option value="nat">nat</option>
         </select>
         <select class="menu-box" @bind="SelectedCar">
+            <option value="StandardVogn">vælge vogn</option>
             <option value="Almindelige Vogne">Almindelige Vogne</option>
             <option value="Store Vogne">Store Vogne – minibus</option>
         </select>
