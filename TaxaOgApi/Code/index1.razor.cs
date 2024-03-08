@@ -50,7 +50,7 @@ namespace TaxaOgApi.Pages
         public string? DistanceResult { get; set; }
 
         [Inject]
-        public ApiService ApiService { get; set; }
+        public ApiService? ApiService { get; set; }
 
         public async Task Calculate()
         {
@@ -74,11 +74,11 @@ namespace TaxaOgApi.Pages
             {
                 var result = JsonSerializer.Deserialize<GoogleMapsDistanceMatrixResponse>(response);
 
-                string distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
+                string? distance = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.distance?.text;
 
-                string duration = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.duration?.text;
+                string? duration = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.duration?.text;
 
-
+                
                 if (duration.Contains("hours"))
                 {
                     string[] parts = duration.Split(' ');
@@ -108,7 +108,7 @@ namespace TaxaOgApi.Pages
 
                     double pris = Math.Round(totalPrice, 2);
 
-                    DistanceResult = distance != null ? $"afstand: {distance}, tid: {duration}, pris: {pris} kr" : "";
+                    DistanceResult = $"afstand: {distance}, tid: {duration}, pris: {pris} kr";
                 }
 
                 string ApiMap = "AIzaSyBH1LLJchXHqhquPfqwe8KUCcc2yu7HWG0";
