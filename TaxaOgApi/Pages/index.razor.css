@@ -33,7 +33,7 @@
 
 .square {
     height: 100%;
-    float: left;
+    float: inline-start;
     width: 50%
 }
 
@@ -42,6 +42,7 @@
     border-right: 1px solid black;
     font-size: x-large;
 }
+
 
 
 .checkbox-item {

@@ -78,13 +78,13 @@ namespace TaxaOgApi.Pages
 
                 string? duration = result?.rows?.FirstOrDefault()?.elements?.FirstOrDefault()?.duration?.text;
 
-                
+
                 if (duration.Contains("hours"))
                 {
-                    string[] parts = duration.Split(' ');
+                    string[] Del = duration.Split(' ');
 
-                    int hours = int.Parse(parts[0]);
-                    int minutes = int.Parse(parts[2]);
+                    int hours = int.Parse(Del[0]);
+                    int minutes = int.Parse(Del[2]);
 
                     int totalMinutes = hours * 60 + minutes;
 
